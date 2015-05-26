@@ -1,0 +1,15 @@
+doctype html
+html
+	head
+	title= title
+	link(rel='stylesheet', href='/stylesheets/style.css')
+	script(type='text/javascript').
+		var initialData=!{initialData}
+	body
+		#contentBody.contentBody
+			#react-header-node.header !{header} 
+			#content.content
+				#react-menu-node.menu !{menu}
+				block content
+				
+		script(src='/javascripts/main.js')

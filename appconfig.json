@@ -1,0 +1,8 @@
+{
+	"props" : {
+		"title": "Progressive Enhancement with React and Node",
+		"headerImageLeft": "./images/react-node.png",
+		"headerImageRight": "./images/logo.svg",
+		"loadingImage" : "/images/content_loading.png"
+	}
+}

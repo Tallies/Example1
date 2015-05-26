@@ -1,0 +1,106 @@
+h2 How?
+p
+	| Here is the magic formula: 
+	ol
+		li Build you React.js components and pages exclusively for no javascript.
+		li Extend you React.js components to use javascript if available.
+	| In other words, build React.js component for server-side rendering only first. Once the site works as excpected, extend you components to support javascript in the browser. 
+p
+	| But we're getting ahead of ourselves. Let's start with some definitions.
+p.definition
+	span.title Node.js
+	span.description 
+		| An open source, cross-platform runtime environment for server-side and 
+		| networking applications. Node.js applications are written in JavaScript.
+	a.reference(href="https://nodejs.org/") Node.js home
+p.definition
+	span.title NPM
+	span.description 
+		| Node Package Manager. An platform for including javascript packages 
+		| in your projects.
+	a.reference(href="https://www.npmjs.com/") NPM home
+p.definition
+	span.title React.js
+	span.description
+		| An open source javascript library for building components as self contained
+		| units. It leverages a virtual DOM and an xml style html syntax (JSX)
+		| for defining the html for the components.
+	a.reference(href="https://facebook.github.io/react/") React.js home
+	a.reference(href="https://www.npmjs.com/package/react") React.js NPM package
+p.definition
+	span.title Express
+	span.description
+		| An open source web application framework for Node.js. In other words, it
+		| provides the infrastrure for handling HTTP requests and responses.
+	a.reference(href="http://expressjs.com/") Express.js home
+	a.reference(href="https://www.npmjs.com/package/express") Express.js NPM package
+p.definition
+	span.title Jade
+	span.description
+		| A node templating engine. It is the default templating engine of Express
+	a.reference(href="http://jade-lang.com/") Jade home
+	a.reference(href="https://www.npmjs.com/package/jade") Jade NPM package
+p.definition
+	span.title Gulp
+	span.description
+		| An open source stream based build component.
+	a.reference(href="http://gulpjs.com/") Gulp home
+	a.reference(href="http://slides.com/contra/gulp") Gulp - A stream build system
+	a.reference(href="https://github.com/substack/stream-handbook") Stream handbook
+	a.reference(href="https://www.npmjs.com/package/gulp") Gulp NPM package
+p.definition
+	span.title Browserify
+	span.description
+		| An open source packaging component for allowing Node.js style "require('modules')"
+		| in the browser.
+	a.reference(href="http://browserify.org/") Browserify home
+	a.reference(href="https://www.npmjs.com/package/browserify") Browserify NPM package
+p.definition
+	span.title Reactify
+	span.description
+		| An open source transform component for Browserify to convert 
+		| React.js JSX components to React.js JavaScript components that 
+		| can run in the browser.
+	a.reference(href="https://github.com/andreypopp/reactify") Reactify home
+	a.reference(href="https://www.npmjs.com/package/reactify") Reactify NPM package
+p.definition
+	span.title gulp-jshint
+	span.description
+		| An open source component for Gulp to flag suspicious JavaScript.
+	a.reference(href="https://github.com/spalger/gulp-jshint") gulp-jshint home
+	a.reference(href="http://jshint.com/docs/") gulp-jshint documentation
+	a.reference(href="https://www.npmjs.com/package/gulp-jshint") gulp-jshint NPM package
+p.definition
+	span.title json-stringify-safe
+	span.description
+		| An open source component for Gulp to flag suspicious JavaScript.
+	a.reference(href="https://github.com/isaacs/json-stringify-safe") json-stringify-safe home
+	a.reference(href="https://www.npmjs.com/package/json-stringify-safe") json-stringify-safe NPM package
+#page1
+h3 Getting started
+p
+	| Let's first do a quick design of what we want to accomplish. 
+	
+p
+	| For this example, the goal is a simple web site. The functional 
+	| requirements are: 
+	ul
+		li It must have four pages: What?, Why?, Who? and How? 
+		li It needs a header with a title and image(s)
+		li It needs a menu to navigate between the pages.  
+
+p 
+	| The non-functional requirements are:
+	ul
+		li It needs to be able to run on browser that does not support Javascript
+		li It needs to progressively enhance on browsers that does support Javascript to be a single page web-site
+
+p
+	| Architecturally, the site will be hosted in Node.js, running Express 
+	| with Jade as the templating engine. The header, menu and content pages 
+	| will be React.js components, as React.js gives us the ability do two 
+	| things that we need to meet both the non-functional requirements: 
+	ol
+		li It allows for executing the components on the server to create the HTML required for the section (header, menu or content) we're showing, and 
+		li It allows the the components to run on the client if Javascript is available, and therefore enable a single page implementation. 
+		
