@@ -17,6 +17,13 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 3000
 app.set('port', port);
 
 /**
+* Get the IP Address
+*/
+
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+app.set("ip", ipaddress);
+
+/**
  * Create HTTP server.
  */
 
@@ -26,7 +33,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, ipaddress);
 server.on('error', onError);
 server.on('listening', onListening);
 
