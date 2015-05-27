@@ -49,6 +49,8 @@ span.header{
 
 h2 {
 	/*text-shadow:3px 3px 7px #3F4037;*/
+	border-bottom:  1px solid #95C331;
+	padding-bottom: 15px;
 }
 
 a {
