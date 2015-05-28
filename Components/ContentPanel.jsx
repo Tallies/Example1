@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var React = require("react");
+var _ = require("underscore");
 
 //SEE BELOW
 // var WhatContentPanel = require("./WhatContentPanel.jsx").WhatContentPanel;
@@ -12,11 +13,16 @@ var ContentPanel = React.createClass({
 	//Allows a consumer to indicate that the content has changed
 	setContent : function(content) {
 		this.setState({content : content});
+		var node = React.findDOMNode(this).parentNode;
+		node.firstChild.style.visibility = "initial";
+		node.className = node.className.substr(0, node.className.length - " contentImageShow".length);
 	},
 	
 	//Allows a consumer to indicate that the component should show the "loading" image and remove the current content.
 	setLoading: function(){
-		this.setState({content: "<image src='" + this.props.loadingImage + "'/>"})
+		var node = React.findDOMNode(this).parentNode;
+		node.firstChild.style.visibility = "hidden";		
+		node.className += " contentImageShow";
 	},
 	
 	//React lifecycle methods

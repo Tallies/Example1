@@ -38,7 +38,7 @@ router.get(/^(\/what\/get|\/why\/get|\/who\/get|\/how\/get)(?:\/(?=$))?$/i, func
 	setTimeout(function() {
 		//get the requested page
 		var page = getPage(req.url);	
-		var contentPanel = getContentPanel(page);	
+		var contentPanel = getParsedPage(page);	
 		var data = {'contentPanel' : contentPanel};
 		res.send(stringify(data, null, 2));
 	}, 1500);
@@ -68,9 +68,7 @@ function getMenu(page, initialData) {
 //Gets the content panel html from the ContentPanel component and set the initial data to share with react on the client 
 function getContentPanel(page, initialData) {
 	
-	var path = express().get("views") + "/" + page + '.jade';
-	console.log("Path to view:" +path);
-	var content = Jade.renderFile(path, {compileDebug:true});	
+	var content = getParsedPage(page);
 	
 	if(initialData) {
 		initialData.contentPanel = {content:content, loadingImage: config.props.loadingImage};
@@ -82,6 +80,13 @@ function getContentPanel(page, initialData) {
 	
 	var contentPanel = React.renderToString(ContentPanel(initialData.contentPanel));
 	return contentPanel;
+}
+
+function getParsedPage(page){
+	var path = express().get("views") + "/" + page + '.jade';
+	console.log("Path to view:" +path);
+	var content = Jade.renderFile(path, {compileDebug:true});	
+	return content;
 }
 
 //extract the wanted page from the url

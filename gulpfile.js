@@ -18,8 +18,8 @@ gulp.task('jsx', function() {
 });
 
 
-gulp.task('default', ['lint', 'jsx'], function(){
-	gulp.watch('./public/javascripts/*.js', function() {
+ gulp.task('default', ['lint', 'jsx'], function(){
+	//gulp.watch('./public/javascripts/*.js', function() {
 		gulp.run('jsx');
-	});
+	// });
 });

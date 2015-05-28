@@ -185,6 +185,17 @@ a.reference {
 	font-size:10pt;
 }
 
+/* Preloading */
+.contentImage{
+	background-image: url('../images/content_loading.png');
+	background-repeat: no-repeat;
+	background-position:  -9999px -9999px;
+}
+
+.contentImageShow{
+	background-position: 0px 0px;
+}
+
 
 /*
 3F4037 gray
