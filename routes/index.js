@@ -35,13 +35,13 @@ router.get(/^(\/|\/what|\/why|\/who|\/how)(?:\/(?=$))?$/i, function(req, res, ne
 //Regex suck, but it's popular, and is used by router to do matching. This basically only matches: /what/get, /why/get, /who/get, /when/get, /how/get
 router.get(/^(\/what\/get|\/why\/get|\/who\/get|\/how\/get)(?:\/(?=$))?$/i, function(req, res, next) {
 	//this is a BAD way of delaying the response. It is ONLY here to help show the javascript on the client side kick in to progressively enhance the UX
-	setTimeout(function() {
+	//setTimeout(function() {
 		//get the requested page
 		var page = getPage(req.url);	
 		var contentPanel = getParsedPage(page);	
 		var data = {'contentPanel' : contentPanel};
 		res.send(stringify(data, null, 2));
-	}, 1500);
+	//}, 1500);
 });
 
 //Helper methods
