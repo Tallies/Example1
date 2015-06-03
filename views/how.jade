@@ -2,9 +2,9 @@ h2 How?
 p
 	| Here is the magic formula: 
 	ol
-		li Build you React.js components and pages exclusively for no javascript.
-		li Extend you React.js components to use javascript if available.
-	| In other words, build React.js component for server-side rendering only first. Once the site works as excpected, extend you components to support javascript in the browser. 
+		li Build you React.js components and pages exclusively for no JavaScript.
+		li Extend your React.js components to use JavaScript if available.
+	| In other words, build React.js components for server-side rendering only first. Once the site works as expected, extend your components to support JavaScript in the browser. 
 p
 	| But we're getting ahead of ourselves. Let's start with some definitions.
 p.definition
@@ -16,13 +16,13 @@ p.definition
 p.definition
 	span.title NPM
 	span.description 
-		| Node Package Manager. An platform for including javascript packages 
+		| Node Package Manager. An platform for including JavaScript packages 
 		| in your projects.
 	a.reference(href="https://www.npmjs.com/") NPM home
 p.definition
 	span.title React.js
 	span.description
-		| An open source javascript library for building components as self contained
+		| An open source JavaScript library for building components as self contained
 		| units. It leverages a virtual DOM and an xml style html syntax (JSX)
 		| for defining the html for the components.
 	a.reference(href="https://facebook.github.io/react/") React.js home
@@ -92,8 +92,8 @@ p
 p 
 	| The non-functional requirements are:
 	ul
-		li It needs to be able to run on browser that does not support Javascript
-		li It needs to progressively enhance on browsers that does support Javascript to be a single page web-site
+		li It needs to be able to run on a browser that does not support JavaScript
+		li It needs to progressively enhance on browsers that do support JavaScript to be a single page web-site
  
 h3 Architecture		
 p
@@ -103,7 +103,7 @@ p
 	| things that we need to meet both the non-functional requirements: 
 	ol
 		li It allows for executing the components on the server to create the HTML required for the section (header, menu or content) we're showing, and 
-		li It allows the the components to run on the client if Javascript is available, and therefore enable a single page implementation.
+		li It allows the the components to run on the client if JavaScript is available, and therefore enable a single page implementation.
 p 
 	| Here's an architecture diagram of how this works.
 	img(src="/images/isomorphic_node_architecture.svg")
@@ -139,7 +139,7 @@ p
 	p
 		| Let's quickly go over the folder structure and important files.
 		h5 /bin/www
-		|   It is startup file script file that Express uses to start the http server. If you're looking to configure ports 
+		|   It is the script file that Express uses to start the http server. If you're looking to configure ports 
 		| and such, that's were you need to go to do that. Previous versions of Express used a server.js, file in the application root. A lot of online examples still refer to "server.js", 
 		| so don't get confused.
 		
@@ -199,7 +199,7 @@ p
 		h5 browserify, vinyl-source-stream, reactify, envify
 		| Allows you to use Node "require" statements in script files that you can then use on both the server and in the browser. It does this by 
 		| bundling the scripts you browserify into a new .js file that can be referenced from html pages. In this example, a file called "main.js" is generated\
-		| in the "/public/javascripts" folder, and it will contain the React.js components, as well as other scripts where I want to reference libraries via "require".
+		| in the "/public/JavaScripts" folder, and it will contain the React.js components, as well as other scripts where I want to reference libraries via "require".
 		
 		h5 gulp-jshint
 		| Will report any suspicious JavaScript that is added to the "main.js" file after it's been generated. Not required for this example, but useful to always include.
@@ -228,7 +228,7 @@ p
 
 				var paths = {
 					src : ["./client_lib/main.js", "./Components/*.jsx"],
-					js : "./public/javascripts"
+					js : "./public/JavaScripts"
 				}
 
 				gulp.task('jshint', function() {
@@ -253,7 +253,7 @@ p
 
 				gulp.task('default', ['jshint', 'browserify', 'watch']);
 				
-	| The syntax for Gulp is pretty human readable and easy to follow. The first task ("jshint") is for configuring jshint. It will validate all JavaScript files in the client_lib folder. This is good time to create that 
+	| The syntax for Gulp is pretty human readable and easy to follow. The first task ("jshint") is for configuring jshint. It will validate all JavaScript files in the client_lib folder. This is a good time to create that 
 	| folder in the root of your application, as it doesn't exist yet. The second task ("browserify") is for parsing the "./client_lib/main.js" through browserify, and the reactify transformation component. Reactify will take any JSX syntax  and 
 	| convert it to the equivalent React API calls that is represented by the JSX. The third  task is adding a watch over main.js and the component script files, so that when any of them change, the "jshint" and "browserify" tasks are executed. The last 
 	| task is the default that will be called when executing Gulp. 
@@ -470,7 +470,7 @@ pre
 			module.exports.ContentPanel = ContentPanel;
 h4 2. Static Jade views
 p 
-	| Now that our base components have been create, let's first create the Jade views for each for each to menu items. In the "views" folder, add  what.jade, why.jade, who.jade and how.jade. Add the appropriate Jade code in there for your content.
+	| Now that our base components have been created, let's first create the Jade views for each for each to menu items. In the "views" folder, add  what.jade, why.jade, who.jade and how.jade. Add the appropriate Jade code in there for your content.
 	
 h4 3. Configure the routes
 p
@@ -767,14 +767,14 @@ p
 	pre
 		code.jade
 			:escape
-					script(src='/javascripts/main.js')
+					script(src='/JavaScripts/main.js')
 					
 	| We must also write out the initialData object created in the router for our client side scripts, and add a reference to "highlight.js". Add the following above your "body" element, nested under "header".
 	pre
 		code.jade
 			:escape
-					script(src="/javascripts/highlight.pack.js")	
-					script(type='text/javascript').
+					script(src="/JavaScripts/highlight.pack.js")	
+					script(type='text/JavaScript').
 						var initialData=!{initialData}
 	
 	| In "routes/index.js" we stringify the initialData object, and write it out to the response so it's available on the client, for main.js.
@@ -879,8 +879,8 @@ p
 				});
 	
 	| In this route, we only parse the requested view with Jade, and return the resulting HTML string as the value for the "contentPanel" property in the JSON response object.
-	h4 Test the Javascript enabled version
-	| Now when you browse to the site, your page does not navigate away on menu item selections, but only change the content currently showing. You can disable Javascript, refresh, and see that the site 
+	h4 Test the JavaScript enabled version
+	| Now when you browse to the site, your page does not navigate away on menu item selections, but only change the content currently showing. You can disable JavaScript, refresh, and see that the site 
 	| immediately reverts back to the server only version.
 	
 	h3 Summary
