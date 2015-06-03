@@ -71,14 +71,14 @@ function getContentPanel(page, initialData) {
 	var content = getParsedPage(page);
 	
 	if(initialData) {
-		initialData.contentPanel = {content:content, loadingImage: config.props.loadingImage};
+		initialData.contentPanel = {content: page, loadingImage: config.props.loadingImage};
 	}
 	else
 	{
-		initialData ={ contentPanel : { content : content , loadingImage: config.props.loadingImage} };
+		initialData ={ contentPanel : { content : page, loadingImage: config.props.loadingImage} };
 	}
 	
-	var contentPanel = React.renderToString(ContentPanel(initialData.contentPanel));
+	var contentPanel = React.renderToString(ContentPanel({content:content, loadingImage: initialData.contentPanel.loadingImage}));
 	return contentPanel;
 }
 

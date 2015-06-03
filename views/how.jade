@@ -77,7 +77,7 @@ p.definition
 	a.reference(href="https://github.com/isaacs/json-stringify-safe") json-stringify-safe home
 	a.reference(href="https://www.npmjs.com/package/json-stringify-safe") json-stringify-safe NPM package
 #page1
-h3 Getting started
+h3 Requirements and design
 p
 	| Let's first do a quick design of what we want to accomplish. 
 	
@@ -94,7 +94,8 @@ p
 	ul
 		li It needs to be able to run on browser that does not support Javascript
 		li It needs to progressively enhance on browsers that does support Javascript to be a single page web-site
-
+ 
+h3 Architecture		
 p
 	| Architecturally, the site will be hosted in Node.js, running Express 
 	| with Jade as the templating engine. The header, menu and content pages 
@@ -102,5 +103,790 @@ p
 	| things that we need to meet both the non-functional requirements: 
 	ol
 		li It allows for executing the components on the server to create the HTML required for the section (header, menu or content) we're showing, and 
-		li It allows the the components to run on the client if Javascript is available, and therefore enable a single page implementation. 
+		li It allows the the components to run on the client if Javascript is available, and therefore enable a single page implementation.
+p 
+	| Here's an architecture diagram of how this works.
+	img(src="/images/isomorphic_node_architecture.svg")
+
+h3 Getting started
+p 
+	| Follow these steps for getting up and running.
+
+	h4 1. Install Node and NPM
+	p Download and install Node.js, to the get runtime on you machine. Download an install NPM too, as it's core to getting a Node.js application going.
+	
+	h4 2. Install and configure Express
+	p
+		| Open command prompt and run :
 		
+		pre
+			code.dos npm install -g express
+	p
+		| This will download the Express http  web application package and put in the global NPM cache.
+		| In command prompt run :
+		pre express &ltPATH&gt;
+		| &lt;PATH&gt; is where you want create your application. It can be an absolute or relative path. 
+	p
+		| In the folder, Express will create a basic application all ready for you to just start adding code. The current version of Express (v2.9.1) create a folder structure as follows.
+		img(class="block" src="/images/FoldersAndFiles.png")
+		| To find out your Express version, type the following in command prompt:
+		pre
+			code.dos npm express --version
+	p
+		| Let's quickly go over the folder structure and important files.
+		h5 /bin/www
+		|   It is startup file script file that Express uses to start the http server. If you're looking to configure ports 
+		| and such, that's were you need to go to do that. Previous versions of Express used a server.js, file in the application root. A lot of online examples still refer to "server.js", 
+		| so don't get confused.
+		
+		h5 /node_modules
+		| NPM will install all the required packages to this folder. Remember to exclude this folder from any source control repository you add your code to, as NPM will install the required packages for you. 
+		| To do that, once you have pulled the source code to a new location, open command prompt to the root of your application and run the following:
+		pre
+			code.dos nmp install
+		| NPM will install all the packages contained in the "package.json" meta data file.
+		
+		h5 package.json
+		| The package.json file in the root of your application is a meta data file for describing the properties and dependencies of your application. It's very much like a .csproj, although it has a runtime purpose, and 
+		| is not just a descriptor file for an IDE. It's important to understand what is in the package.json file, and and excellent resource for that is  
+		a(href="http://browsenpm.org/package.json" target="_blank") package.json - An interactive guide
+		| . There is also the 
+		a(href="https://docs.npmjs.com/files/package.json" target="_blank") official documentation
+		| , of course. Whenever you want to add a package to your application, remember to run the NPM install command with --save or --save-dev. It will add the package to the dependencies or development-dependencies lists for you. 
+		
+		h5 /public
+		| The "public" folder contains any static content (html, images, scripts, stylesheets, etc) that should be publicly accessible to browsers. Express uses the "public" folder as the root for any static content 
+		| , so to reference an image from the root will use "/images/someimage.png", NOT "/public/images/someimage.png". This is configured in the "app.js" file with the line: 
+		pre
+			code.js app.use(express.static(path.join(__dirname, 'public')));
+			
+		h5 /routes/index.js
+		| This is where you configure the routing of requests to your application for the all requests not matched by other routers (like "users.js", which is configured for the "/users" route base). More on that later.
+		
+		h5 /views
+		| The "views" folder contains the view templates for whatever template engine is configured. I used the default Jade template engine, ergo the files with the ".jade" extensions. By default you 
+		| get 3 files: error.jade, index.jade and layout.jade.  "layout.jade" is used to define how the major components of you site is laid out (header, menu, body, left/right panels, etc). By default, it references "index.jade" for 
+		| the content of the page. 
+		
+		h5 /app.js
+		|  The script file that configures the Express application container.
+		
+	h4 3. Install the packages for this example
+	p
+		| Run each of the following in command line in the root of your application:
+		pre 
+			code.dos
+				| npm install jquery --save
+				| npm install react --save
+				| npm install node-jsx --save
+				| npm install json-stringify-safe --save
+				| npm install underscore--save
+				| npm install highlight --save
+				| npm install browserify --save-dev
+				| npm install envify --save-dev
+				| npm install reactify --save-dev
+				| npm install react-tools --save-dev
+				| npm install gulp --save-dev
+				| npm install vinyl-source-stream --save-dev
+				| npm install gulp-concat --save-dev
+				| npm install gulp-jshint --save-dev
+		| Here is a quick run down on the the role some of these packages play
+		
+		h5 browserify, vinyl-source-stream, reactify, envify
+		| Allows you to use Node "require" statements in script files that you can then use on both the server and in the browser. It does this by 
+		| bundling the scripts you browserify into a new .js file that can be referenced from html pages. In this example, a file called "main.js" is generated\
+		| in the "/public/javascripts" folder, and it will contain the React.js components, as well as other scripts where I want to reference libraries via "require".
+		
+		h5 gulp-jshint
+		| Will report any suspicious JavaScript that is added to the "main.js" file after it's been generated. Not required for this example, but useful to always include.
+		
+		h5 json-stringify-safe
+		| A popular library for serializing java script objects to json strings.
+		
+		h5 node-jsx
+		| Allows you to use JSX in your React components without having to explicitly require the JSX transpiler in every file.
+	
+	h4 4.  Configure Gulp
+	p
+	| Gulp is needed to ensure that our JavaScript files that need to run on both the server and the client, and converted using Browserify to be able to do that. You can of course 
+	| use any build tool you want, like Grunt. I like the stream base concept of Gulp.
+	p
+	| In the root of you application, create a "gulpfile.js" file and open it in an editor.  It looks like this:
+	pre
+		code.js
+			:escape
+				var gulp = require('gulp'),
+				browserify = require('browserify'),
+				jshint = require("gulp-jshint"),
+				source = require("vinyl-source-stream"),
+				reactify = require('reactify');
+
+
+				var paths = {
+					src : ["./client_lib/main.js", "./Components/*.jsx"],
+					js : "./public/javascripts"
+				}
+
+				gulp.task('jshint', function() {
+				  return gulp.src(paths.src[0])
+					.pipe(jshint())
+					.pipe(jshint.reporter('default'));
+				});
+
+				gulp.task('browserify', function() {
+					var b = browserify();
+					b.transform(reactify);
+					b.add(paths.src[0]);
+					
+					return b.bundle()
+						.pipe(source('main.js'))
+						.pipe(gulp.dest(paths.js));
+				});
+
+				gulp.task('watch', function() {
+					gulp.watch(paths.src, ['jshint', 'browserify']);
+				})
+
+				gulp.task('default', ['jshint', 'browserify', 'watch']);
+				
+	| The syntax for Gulp is pretty human readable and easy to follow. The first task ("jshint") is for configuring jshint. It will validate all JavaScript files in the client_lib folder. This is good time to create that 
+	| folder in the root of your application, as it doesn't exist yet. The second task ("browserify") is for parsing the "./client_lib/main.js" through browserify, and the reactify transformation component. Reactify will take any JSX syntax  and 
+	| convert it to the equivalent React API calls that is represented by the JSX. The third  task is adding a watch over main.js and the component script files, so that when any of them change, the "jshint" and "browserify" tasks are executed. The last 
+	| task is the default that will be called when executing Gulp. 
+	p
+	| You can now run you build process in a command prompt while developing. Execute: 
+	pre
+		code.dos gulp
+	| You should see output that looks as follows:
+	p
+		img(src="/images/gulp_output.png")
+	
+	h3 Server only version
+	p
+	| We're now ready to start creating our application. We're going to start by building only what is necessary for getting as full a featured application from  the server only, as is possible.
+	
+	h4 1. Create the React components
+	| Create a "Components" folder in the root of the application.
+	h5 The Header
+	| Create a file called Header.jsx in the "Components" folder, and open it in an editor. You can create it with the ".js" file extension too, 
+	| and that will probably give you default syntax highlighting in your editor. However, I prefer to be able to see at a glance what kind of code 
+	| is contained in a file, and the ".jsx" extension does that for me. I associated the ".jsx" extension with JavaScript syntax highlighting in my editor.
+	
+	| I want the header to display a React.js/Node.js image on the left, then the title of my site, and then my company logo on the right.
+	| The HTML for would look something like the following:
+	pre
+		code.html
+			:escape
+				<div>
+					<div className="left">
+						<img src="..."/>
+					</div>
+					<div className="center">
+						<span><h1>My funky header</h1></span>
+					</div>
+					<div className="right">
+						<img src="..."/>
+					</div>
+					<div className="clear"></div>
+				</div>
+	| The above HTML we want to wrap in a React.js component. If you don't know anything about React, go read their excellent 
+	a(href="https://facebook.github.io/react/docs/tutorial.html" target="_blank") tutorial
+	| , as I won't be diving in all that deep on React.js itself.
+	
+	| The first thing is the require React.js as a dependency at the top of your file:
+	pre
+		code.js
+			| var React = require("react");
+	
+	| That will give you access to all the top level functions React provides for creating and working with components. Specifically, we're interested in the "createClass" function. 
+	pre
+		code.js
+			| var Header = React.createClass({});
+	
+	| In order to make our component available to the rest of our Node application, we need to ensure that it can be required from else where. To do that, you have to add you class to 
+	| the module exports object at the bottom of your file:
+	pre
+		code.js
+			| module.exports.Header = Header;
+	
+	| Now we need make React output the above HTML. Add the React component API "render" function (a required function for any React component), output the above HTML as JSX.
+	pre
+		code.js
+			:escape
+				 var Header = React.createClass({
+					//React lifecycle methods
+					render: function() {				
+						return (
+							<div>
+								<div className="left">
+									<img src={this.props.headerImageLeft}/>
+								</div>
+								<div className="center">
+									<span><h1>{this.props.title}</h1></span>
+								</div>
+								<div className="right">
+									<img src={this.props.headerImageRight}/>
+								</div>
+								<div className="clear"></div>
+							</div>
+						);
+					}
+				  });
+				  
+	| Note the use of the "className" attribute instead of "class". This is a JSX requirement. Also, I'm  using the props object on the component for the image sources 
+	| and the header text. So when we use this component, we need to remember to pass those properties in. 
+	
+	h5 The Menu
+	| For the menu, we are going to need two .jsx files. One for the menu container, and one for the menu items that will be used in the menu container.  The HTML for this will be akin to:
+	pre
+		code.html
+			:escape
+				<ul class="menu">
+					<li class="menuItem">
+						<a class="menuItem menuItemActive" id="what" href="http://localhost:8080/what">What?</a>
+					</li>
+					<li class="menuItem">
+						<a class="menuItem" id="why" href="http://localhost:8080/why">Why?</a>
+					</li>
+					<li class="menuItem">
+						<a class="menuItem" id="who" href="http://localhost:8080/who">Who?</a>
+					</li>
+					<li class="menuItem">
+						<a class="menuItem" id="how" href="http://localhost:8080#how">How?</a>
+					</li>
+				</ul>
+
+	| Since we're building modularly with React let's start with the menu items, and then we'll use the finished component in the menu. 
+	| The basic menu item component looks as follows:
+	pre
+		code.js
+			:escape
+				var React = require("react");
+
+				var MenuItem = React.createClass({					
+					//custom methods
+					getCss: function() {
+						var css = "menuItem";
+						
+						if (this.props.active==this.props.menuName) {
+							css +=  " menuItemActive" ;
+						}
+						return css;
+					},						
+					getUrl : function() {
+						 return "/" + this.props.menuName;
+					},
+					getText : function() {
+						return this.props.children.toString();
+					},
+					
+					//React lifecycle methods
+					render: function() {
+						return (
+						<li className="menuItem">
+							<a className={this.getCss()} id={this.props.menuName} href={this.getUrl()}>
+								{this.getText()}
+							</a>
+						</li>
+						)
+					}
+				});
+
+				module.exports.MenuItem = MenuItem;
+				
+	| I wrapped the code to determine the CSS, default URL and text for the menu item into methods. 
+	| In the Menu, I now simply have to require my MenuItem component, and then add a MenuItem instance for each menu item.
+	pre
+		code.js
+			:escape
+				var React = require("react");
+				var MenuItem = require("./MenuItem.jsx").MenuItem;
+
+				var Menu = React.createClass({
+					//React lifecycle methods
+					render: function() {		
+						var createMenu = function(name, caption) {
+							return (
+								<MenuItem menuName={name} active={this.props.active}>{caption}</MenuItem>
+							)
+						}.bind(this);
+						
+						return (
+								<ul className="menu">
+									{createMenu("what", "What?")}
+									{createMenu("why", "Why?")}
+									{createMenu("who", "Who?")}
+									{createMenu("how", "How?")}					
+								</ul>
+						);
+					}
+				});
+
+				module.exports.Menu = Menu;
+	
+	|  Pretty straight forward. I send in the "active" property to indicate which menu is currently the active menu. We'll later extend this to enable it to change dynamically on the client. 
+	| However, we're first building for  server only, "static" pages. That means that when the component renders, which is only once on the server, it only needs to know which menu item is active for that response.
+p
+	| On a personal note, the Menu component eloquently  captures what I love about React and the way to build components in it. It is all about composability and reuse. It's very powerful pattern.
+p
+	| That's the menu created. Quite simple!
+h5 The ContentPanel
+p
+	| In the content panel, we will be showing the corresponding Jade view for each of the menu items. If we were not building an isomorphic application, this can be done by purely telling jade which 
+	| view to load for the request, which will then parse and render the HTML within the layout view, and pass it to the browser.
+p
+	| However, we want to eventually be able to dynamically replace the content based on a selected menu item, without reloading the entire page. To enable that, we have to wrap the content in a React component.
+	| I went down a wrong path here at first. I created React components  to hold the static content as JSX for each menu item, for example WhatContentPanel, WhoContentPanel, etc. This turned out to be a terrible idea
+	| for a couple of reasons. First, and the most obvious, is that it badly breaks with the implicit design decision to have static HTML content coded in Jade, and parsed to HTML through that (excellent) engine. Having static content in two formats is a recipe for confusion, 
+	| additional maintenance overhead, and general frustration. The second problem is that when I started implementing the client side enhancement in my components, I realised that the Browserify process (correctly!) generates 
+	| the main.js file with all my React components included in it too... including the content in them. That meant that ALL my site content would be downloaded for every page request. Definitely a no go. 
+p
+	| I ended up rather creating my static HTML content as a Jade views (good!), parsing the static content view to HTML for the page being requested, and then passing the parsed HTML to my ContentPanel component. Please note, that this is still a bit of 
+	| a lazy approach. I should really be doing the Jade parsing IN the ContentPanel component. I will hopefully fix this eventually, but for now it suffices for illustrative purposes.
+pre
+	code.js
+		:escape
+			var React = require("react");
+
+			var ContentPanel = React.createClass({
+				//React lifecycle methods
+				render: function(){
+					//More correct is to have the Jade parse on client side and compile the raw jade 
+					//script to html. However, for this example the following will suffice. 
+					//***NB*** - I do not recommend the use of "dangerouslySetInnerHTML"! Don't use it in production react components!
+					var createHtml = function(){
+						return {__html: this.state.content};
+					}.bind(this);
+					return (
+						<div dangerouslySetInnerHTML={createHtml()} />		
+					);
+				}
+			});
+
+			module.exports.ContentPanel = ContentPanel;
+h4 2. Static Jade views
+p 
+	| Now that our base components have been create, let's first create the Jade views for each for each to menu items. In the "views" folder, add  what.jade, why.jade, who.jade and how.jade. Add the appropriate Jade code in there for your content.
+	
+h4 3. Configure the routes
+p
+	| Open "/routes/index.js" in you editor. We first need install the JSX transpiler so that Node can seamlessly understand our React components. At the top of the file, insert the following line:
+	pre
+		code.js var jsx = require("node-jsx").install({extension: '.jsx', harmony: true});
+	| The default extension for the transpiler is ".js", so if you're using the ".jsx" extension like me, you need to tell the transpiler this using the "extension" property on the options 
+	| object. "harmony" just tells it that you also want to support ES6 syntax.
+p 
+	| To use the components, we have to require them, along with React and the Jade parser. Add the following requires in the appropriate place at the top of the index.js file.
+	pre
+		code.js
+			:escape
+				var React = require("react");
+				var Jade = require("jade");
+
+				//React components
+				var Header = React.createFactory(require('../Components/Header.jsx').Header);
+				var Menu = React.createFactory(require('../Components/Menu.jsx').Menu);
+				var ContentPanel = React.createFactory(require('../Components/ContentPanel.jsx').ContentPanel);
+	
+	| You will need an object to hold some configuration values, like the site title, the header images, etc. I created a json file called appconfig.json, and via the magic for "require()", I load it as JavaScript object. However, you could 
+	| also just add it as a variable somewhere in index.js. Here is what the configuration looks like:	
+	pre
+		code.json
+			:escape
+				"props" : {
+					"title": "Progressive Enhancement with React and Node",
+					"headerImageLeft": "./images/react-node.png",
+					"headerImageRight": "./images/logo.svg",
+					"loadingImage" : "/images/content_loading.png"
+				}
+	| The strategy for routing is to handle all requests to any of  /, /what, /why, /who and /how the same way. We will render the header component, the menu component, parse the correct jade static content, and then finally render 
+	| the ContentPanel component. We will take the output for those and pass it to the Jade template engine as variables that will be used in the index.jade view.
+	pre
+		code.js
+			:escape
+				router.get(/^(\/|\/what|\/why|\/who|\/how)(?:\/(?=$))?$/i, function(req, res, next) {
+					//get the requested page
+					var page = getPage(req.url, "what"); 
+					
+					var initialData = { config:config	};
+					var header = getHeader(initialData);
+					var menu = getMenu(page, initialData);	
+					var contentPanel = getContentPanel(page, initialData);
+					
+					res.render('index', { title:config.props.title, header : header, menu : menu, contentPanel: contentPanel, initialData:stringify(initialData, null, 2)});
+				});
+	| The regular expression matches the paths we're insterested in. The helper function "getPage" extracts which menu item was clicked from the request url.
+	pre
+		code.js
+			:escape
+				//extract the wanted page from the url
+				function getPage(url, defaultForRoot) {
+					if(url === "/") {
+						return defaultForRoot;
+					}
+					
+					if(url.indexOf("/") == 0)
+						url = url.substr(1);
+					var page = url;		
+					if(page.indexOf("/get") > 0) {
+						page = url.substr(0, url.length - ("/get").length);
+					}
+					
+					if(endsWith(page, "/")) {
+						page = page.substr(0, url.length-1);
+					}
+					return page;
+				}
+
+				function endsWith(str, suffix) {
+					return str.indexOf(suffix, str.length - suffix.length) !== -1;
+				}
+				
+	| "initalData" is an object that will be used to tell the client side versions for React what the data was that was used to render the components on the server side. In the interest of not rehashing 
+	| code, I'm leaving it in these code snippets. For now you can ignore it, but note that whatever I pass to a React component, I add to this object too. The code to render the components are pretty straight forward. Note however 
+	| that the "renderToString()" function is used, as we want to pass it to the Jade view to use where appropriate.
+	pre
+		code.js
+			:escape
+				//Helper methods
+				//Gets the header html from the react Header component and sets the initial data to share with the react on client
+				function getHeader(initialData){
+					if(initialData) {
+						initialData.header = {
+							title:config.props.title, 
+							headerImageLeft: config.props.headerImageLeft,
+							headerImageRight: config.props.headerImageRight
+						};								
+					}
+					return React.renderToString(Header(initialData.header));
+				}
+
+				//Gets the menu html from the react Menu component and sets the initial data to share with the react on client
+				function getMenu(page, initialData) {
+					if(initialData) {
+						initialData.menu = { active: page };
+					}
+					return React.renderToString(Menu(initialData.menu));
+				}
+
+				//Gets the content panel html from the ContentPanel component and set the initial data to share with react on the client 
+				function getContentPanel(page, initialData) {
+					
+					var content = getParsedPage(page);
+					
+					if(initialData) {
+						initialData.contentPanel = {content: page, loadingImage: config.props.loadingImage};
+					}
+					else
+					{
+						initialData ={ contentPanel : { content : page, loadingImage: config.props.loadingImage} };
+					}
+					
+					var contentPanel = React.renderToString(ContentPanel({content:content, loadingImage: initialData.contentPanel.loadingImage}));
+					return contentPanel;
+				}
+
+				function getParsedPage(page){
+					var path = express().get("views") + "/" + page + '.jade';
+					var content = Jade.renderFile(path, {compileDebug:true});	
+					return content;
+				}
+	p No particular magic here to note. In the "getParsedPage()",  we find the file base on convention (named the same as the menu item), and as Jade to render it for us.
+	
+	h4 4. Using the rendered output
+	| React has rendered our components to strings, and now we must use those strings. In "/views/layout.jade", we use the header and menu HTML strings as follows:
+	pre
+		code.jade
+			:escape
+				doctype html
+				html
+					head
+					meta(name="viewport" content="width=device-width, initial-scale=1.0")
+					title= title
+					link(rel='stylesheet', href='/stylesheets/style.css')
+					
+					body
+						#contentBody.contentBody
+							#react-header-node.header !{header} 
+							div.mainContent
+								#react-menu-node.menu !{menu}
+								div.content
+									block content
+								
+	| #{'"!{header}"'} and #{'"!{menu}"'} contains the HTML strings parsed to Jade. The bang(!) tells Jade to use the string as is, and not escape HTML characters.  "/views/index.jade" is where the content will be placed, and that looks as follows:
+	pre
+		code.jade
+			:escape
+				extends layout
+
+				block content
+					#react-content-panel-node.contentPanel.contentImage !{contentPanel}
+	
+	| Isn't Jade beautiful. I wish it was the standard for writing web pages, instead of clunky, overly verbose HTML.  Anyways... #{'"!{content}"'} contains the output of the ContentPanel component.
+
+					
+	h4 5. Test the server only version
+	p 
+		| That's it. You should be able to fire up Node, browse to your application. In the command prompt, in the root of your application, run:
+		pre
+			code.dos npm start
+		
+	| The default port for express is 3000, so you should find your site at 
+	a(href="http://localhost:3000" target="_blank") http://localhost:3000
+	| , unless (like me), you changed it to something else in "/bin/www".
+	
+	h3 Enhanced version for JavaScript enabled browsers
+	p 
+	| Our site renders just peachy, but our non-functional requirements stated that where possible, we would like to take advantage of JavaScript, and have the same site act like a single page application. 
+	| In order to accomplish that, we need to expose our React components to the browser (this will be done by the Gulp process configured above), and then modify our React components to 
+	| behave differently when on the client.
+	p 
+	| The Menu component will need to modify the link URLs for the menu items, so that instead of navigating off to a new page, an AJAX call is performed to fetch the content for the selected menu. Also, 
+	| the active menu will need to change to the selected one, once the content is delivered and updated.
+	p
+	| For the ContentPanel, the behaviour change is to replace the current content with new contents when asked to, and also use highlight.js to syntax highlight code snippets
+		
+	h4 1. Enhancing the Menu
+	| Righto. The menu items need to modify the URLs in their anchor tags to go nowhere, and execute some script instead. 
+	| But how does the component know when it can change the URL? In other words, how do we determine whether the component is client side and that JavaScript is enabled? 
+	
+	p
+	| Quite easily, it turns out. We'll simply rely on the one of the lifecycle functions available in React components, the "componentDidMount" function. It only executes when the component is mounted 
+	| by the framework onto the HTML node. In "/Components/MenuItem.jsx", add the 'componentDidMount()' function below to the component.
+	pre
+		code.js
+			:escape
+				componentDidMount : function(){
+					var that = this;
+					var domNode = React.findDOMNode(this)
+					var lastSlash = domNode.firstChild.href.lastIndexOf("/");
+					var firstPart = domNode.firstChild.href.substr(0, lastSlash);
+					var lastPart = domNode.firstChild.href.substr(lastSlash + 1);
+					domNode.firstChild.href = firstPart + "#" + lastPart;
+					$(domNode.firstChild).on('click', function(evt) {
+						that.props.menuClickHandler(lastPart);
+						evt.preventDefault();
+					});
+				}
+	|  We find the DOM node that is output for the menu component. Then we change the href attribute to replace the last "/" with a "#". That will make it a document only anchor, so clicking on it won't browse away from the page.
+	| Then we attach a click event handler to the anchor tag. The handler calls through to a function passed in on the properties for the MenuItem.
+	p
+	| The Menu component needs to provide the click handler to the menu items. It also needs to know which is the currently selected menu item, and be able change it on request.
+	pre
+		code.js
+			:escape
+				//custom methods
+				//Allow a consumer to inform the menu that a new menu should be activated.
+				setMenu : function(menu) {
+					this.setState({active:menu});
+				},
+				
+				menuClickHandler : function(evt){		
+					this.props.menuClickHandler(evt)
+				},
+
+				//React lifecycle methods
+				getInitialState: function(){
+					return { active : this.props.active };
+				},
+				
+				render: function() {		
+					var createMenu = function(name, caption) {
+						return (
+							<MenuItem menuName={name} active={this.state.active} menuClickHandler={this.menuClickHandler}>{caption}</MenuItem>
+						)
+					}.bind(this);
+					
+					return (
+							<ul className="menu">
+								{createMenu("what", "What?")}
+								{createMenu("why", "Why?")}
+								{createMenu("who", "Who?")}
+								{createMenu("how", "How?")}					
+							</ul>
+					);
+				}
+	| Implemented now is the component lifecycle function "getInitialState()". In there we create a state object, that has a property called "active" and set that to whatever was passed into the component. In 
+	| the "render()" function JSX, we pass to each menu item a click event handler. Again, this function on the Menu component is doing a pass-through. The "setMenu" function allows a caller to change 
+	| the active menu to a different one. Not complicated, right?
+	
+	
+	h4 2. Enhancing the ContentPanel
+	| Even simpler is the content panel. All we need to do is initialize the component state to the current content with getInitialState, and then  modify the state to the new content on request. We also need to be able to tell the 
+	| component that the new content is being fetched, and it must therefore show a loading image.
+	pre
+		code.js
+			:escape
+				setContent : function(content) {
+					this.setState({content : content});
+					var node = React.findDOMNode(this).parentNode;
+					node.firstChild.style.visibility = "initial";
+					node.className = node.className.substr(0, node.className.length - " contentImageShow".length);
+				},
+				
+				setLoading: function(){
+					var node = React.findDOMNode(this).parentNode;
+					node.firstChild.style.visibility = "hidden";		
+					node.className += " contentImageShow";
+				},
+				
+				getInitialState: function() {
+					return {content:this.props.content};
+				},
+	
+	| Remember to change the reference of "this.props.content" in the "render()" method to "this.state.content:".
+	p
+	| For the syntax highlighting, we will have to call the "highlightBlock()" function in the highlight.js API, when the browser DOM has been rendered. For that we must implement two React component
+	| lifecycle functions: componentDidUpdate and componentDidMount.
+	pre
+		code.js
+			:escape
+				highlight: function() {
+					$('pre code').each(function(i, block) {
+						hljs.highlightBlock(block);
+					  });
+				},
+				
+				//React lifecycle methods
+				componentDidUpdate  : function() {
+					this.highlight()
+				},
+				componentDidMount : function() {
+					this.highlight();
+				},
+				
+	| On the initial render, and then on every subsequent render initiated by state change, "highlight()" is invoked .
+	
+	h4 1. Using the react components on the client	
+	| In the "client_lib" folder, create "main.js" and open it in an editor.  Before we add any code to it, however, we need reference it in "/views/layout.js". Add the following to the bottom of the file
+
+	pre
+		code.jade
+			:escape
+					script(src='/javascripts/main.js')
+					
+	| We must also write out the initialData object created in the router for our client side scripts, and add a reference to "highlight.js". Add the following above your "body" element, nested under "header".
+	pre
+		code.jade
+			:escape
+					script(src="/javascripts/highlight.pack.js")	
+					script(type='text/javascript').
+						var initialData=!{initialData}
+	
+	| In "routes/index.js" we stringify the initialData object, and write it out to the response so it's available on the client, for main.js.
+	p
+	| Now to get the React components be loaded and used client side. In "/client_lib/main.js" we must reference React and our components (and JQuery, for later). Thanks to Browserify, we can do that by using Node.js style "require()" calls.
+	pre
+		code.js
+			:escape
+				var React = require('react');
+				var Header = require('../Components/Header.jsx').Header;
+				var Menu = require("../Components/Menu.jsx").Menu;
+				var ContentPanel = require("../Components/ContentPanel.jsx").ContentPanel;
+				var $ = require("jquery");
+	
+	| Now that we have the dependencies loaded, we have to create the components, and mount them to the elements in our views where, on the server only version, we dumped the output of the server side 
+	| rendering. Remember #{'"!{header}"'}, #{'"!{menu}"'} and #{'"!{content}"'}
+	pre
+		code.js
+			:escape
+				var loadContent = function(name, success, fail){
+					$.ajax({
+							url:name+ "/get",
+							type:"GET",
+							dataType:"json",
+							success: function(data) { success(name, data); },
+							error: fail
+						});
+				};
+
+				//Create and mount the components
+				var headerMountNode = document.getElementById("react-header-node");
+				React.render(React.createElement(Header, { title: initialData.header.title, headerImageLeft:initialData.header.headerImageLeft, headerImageRight: initialData.header.headerImageRight }), headerMountNode);
+
+				var page = getPage();
+				var menuMountNode = document.getElementById("react-menu-node");
+				var menu = React.render(React.createElement(Menu, {active:initialData.menu.active, menuClickHandler: menuClickHandler}), menuMountNode);
+
+				//For contentPanel, we need to fetch the content first
+				var contentPanelMountNode = document.getElementById("react-content-panel-node");
+				var contentPanel;
+
+				loadContent(initialData.contentPanel.content, 
+					function(name, data){
+						contentPanel = React.render(React.createElement(ContentPanel, {content: data.contentPanel, loadingImage: initialData.contentPanel.loadingImage}), contentPanelMountNode);	
+					}, 
+					function(xhr, status, error){
+						content = "Error loading content. " +status +" - " + error ;
+					});
+	
+	| On the client, React will create the components, then diff their virtual DOM representations with what has been rendered with the mount nodes. Wonderously, thanks to initialData, it knows not to update the browser 
+	| DOM, since the HTML showing already is the same as what it will be updated to! Very cool indeed. Oh wait, except for ContentPanel. What's going on there? Well ,we don't want to send all the content that was rendered 
+	| on the server twice in the same request. So for ContentPanel, we send through the "page" that was rendered server side. Then we perform an AJAX call and create the component when the content returns. The beauty of this 
+	| is that the page content is immediately available. React will quietly compare the DOMs and then leave the content as is.
+	p
+	| For completeness, this is what "getPage()" looks like. 
+	pre
+		code.js
+			:escape
+				//Helper functions
+				var getPage = function() {
+					var urlparts = document.location.href.split("/");
+					var page = urlparts[urlparts.length-1];
+					return page;
+				};
+	
+	| Also still missing is the menu click handler that is being passed into the Menu component.
+	pre
+		code.js
+			:escape
+				//Events and helper functions
+				var loadSuccessfull = function(name, data) {
+					contentPanel.setContent(data.contentPanel);	
+					menu.setMenu(name);
+				};
+
+				var loadFail = function(xhr, status, error) {
+					contentPanel.setContent("Error loading content. " +status +" - " + error);
+					console.log("Failed to call server: " + error);
+				};
+
+				//Handles all clicks on the menu. It passed through as a callback since the menu clicks need to affect the 
+				//content panel.
+				var menuClickHandler = function(name) {
+					contentPanel.setLoading();
+					loadContent(name, loadSuccessfull, loadFail);
+				};
+
+	 
+	| In the menuClickHandler we tell the ContentPanel to show the loading image, before then initiating an AJAX call. When it gets the response back from the server it asks the PanelContent to update to the new content, and the Menu to switch to the show the menu item for the content as active. 
+
+	h4 Handling the AJAX requests for content
+	| The last thing to do to get it working is to add a route handler in "./routes/index.js" to handle /what/get, /who/get, /why/get and /how/get requests. For that, we add another routing entry.
+	pre
+		code.js
+			:escape
+				router.get(/^(\/what\/get|\/why\/get|\/who\/get|\/how\/get)(?:\/(?=$))?$/i, function(req, res, next) {
+					//get the requested page
+					var page = getPage(req.url);	
+					var contentPanel = getParsedPage(page);	
+					var data = {'contentPanel' : contentPanel};
+					res.send(stringify(data, null, 2));
+				});
+	
+	| In this route, we only parse the requested view with Jade, and return the resulting HTML string as the value for the "contentPanel" property in the JSON response object.
+	h4 Test the Javascript enabled version
+	| Now when you browse to the site, your page does not navigate away on menu item selections, but only change the content currently showing. You can disable Javascript, refresh, and see that the site 
+	| immediately reverts back to the server only version.
+	
+	h3 Summary
+	p
+	| Using React to build isomorphic websites make the whole concept not only easier, but also way less of a hassle. The same code base for the critical areas of your site is used to render on 
+	| both the server and the client, but the client experience can be progressively enhanced without needing a lot of additional work.
+	p
+	| Additionally, you can get support for this type of isomorphic application using React.js on more platforms than just Node. There are React.js packages to enable Asp.Net MVC has application to 
+	| be implemented isomorphically.
+	p
+	| I found that the reuse of my React.js JavaScript components on both the client and server is a very powerful concept. 
+	p
+	| Now go forth and build awesome applications!

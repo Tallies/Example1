@@ -1,25 +1,33 @@
 var gulp = require('gulp'),
-browserify = require('gulp-browserify'),
-jshint = require("gulp-jshint");
+browserify = require('browserify'),
+jshint = require("gulp-jshint"),
+source = require("vinyl-source-stream"),
+reactify = require('reactify');
 
-gulp.task('lint', function() {
-  return gulp.src('./client_lib/*.js')
+
+var paths = {
+	src : ["./client_lib/main.js", "./Components/*.jsx"],
+	js : "./public/javascripts"
+}
+
+gulp.task('jshint', function() {
+  return gulp.src(paths.src[0])
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('jsx', function() {
-	gulp.src(['./client_lib/*.js'])
-		.pipe(browserify({
-			debug: true,
-			transform: [ 'reactify']
-		}))
-		.pipe(gulp.dest('./public/javascripts'));
+gulp.task('browserify', function() {
+	var b = browserify();
+	b.transform(reactify);
+	b.add(paths.src[0]);
+	
+	return b.bundle()
+		.pipe(source('main.js'))
+		.pipe(gulp.dest(paths.js));
 });
 
+gulp.task('watch', function() {
+	gulp.watch(paths.src, ['jshint', 'browserify']);
+})
 
- gulp.task('default', ['lint', 'jsx'], function(){
-	//gulp.watch('./public/javascripts/*.js', function() {
-		gulp.run('jsx');
-	// });
-});
+gulp.task('default', ['jshint', 'browserify', 'watch']);

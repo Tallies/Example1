@@ -22,6 +22,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Jade filters
+require('jade').filters.escape = function( block ) {
+  return block
+    .replace( /&/g, '&amp;'  )
+    .replace( /</g, '&lt;'   )
+    .replace( />/g, '&gt;'   )
+    .replace( /"/g, '&quot;' )
+    .replace( /#/g, '&#35;'  )
+    .replace( /\\/g, '\\\\'  )
+	.replace(/{/g, '&#123;')
+	.replace(/}/g, '&#125;')
+	;
+}
+
 app.use('/', routes);
 app.use('/users', users);
 

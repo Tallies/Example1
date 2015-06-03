@@ -13,7 +13,7 @@ var $ = require("jquery");
 
 //Events and helper functions
 var loadSuccessfull = function(name, data) {
-	contentPanel.setContent(data.contentPanel);
+	contentPanel.setContent(data.contentPanel);	
 	menu.setMenu(name);
 };
 
@@ -22,17 +22,21 @@ var loadFail = function(xhr, status, error) {
 	console.log("Failed to call server: " + error);
 };
 
-//Handles all clicks on the menu. It passed through as a callback since the menu clicks need to affect the 
-//content panel.
-var menuClickHandler = function(name) {
-	contentPanel.setLoading();
+var loadContent = function(name, success, fail){
 	$.ajax({
 			url:name+ "/get",
 			type:"GET",
 			dataType:"json",
-			success: function(data) { loadSuccessfull(name, data) },
-			error: loadFail
+			success: function(data) { success(name, data); },
+			error: fail
 		});
+};
+
+//Handles all clicks on the menu. It passed through as a callback since the menu clicks need to affect the 
+//content panel.
+var menuClickHandler = function(name) {
+	contentPanel.setLoading();
+	loadContent(name, loadSuccessfull, loadFail);
 };
 
 //Helper functions
@@ -40,7 +44,7 @@ var getPage = function() {
 	var urlparts = document.location.href.split("/");
 	var page = urlparts[urlparts.length-1];
 	return page;
-}
+};
 
 //Create and mount the components
 var headerMountNode = document.getElementById("react-header-node");
@@ -50,5 +54,14 @@ var page = getPage();
 var menuMountNode = document.getElementById("react-menu-node");
 var menu = React.render(React.createElement(Menu, {active:initialData.menu.active, menuClickHandler: menuClickHandler}), menuMountNode);
 
+//For contentPanel, we need to fetch the content first
 var contentPanelMountNode = document.getElementById("react-content-panel-node");
-var contentPanel = React.render(React.createElement(ContentPanel, {content: initialData.contentPanel.content, loadingImage: initialData.contentPanel.loadingImage}), contentPanelMountNode);	
+var contentPanel;
+
+loadContent(initialData.contentPanel.content, 
+	function(name, data){
+		contentPanel = React.render(React.createElement(ContentPanel, {content: data.contentPanel, loadingImage: initialData.contentPanel.loadingImage}), contentPanelMountNode);	
+	}, 
+	function(xhr, status, error){
+		content = "Error loading content. " +status +" - " + error ;
+	});

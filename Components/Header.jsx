@@ -7,10 +7,16 @@ var Header = React.createClass({
 	render: function() {				
 		return (
 			<div>
-				<img className="header left" src={this.props.headerImageLeft}/>
-				<span className="header"><h1>{this.props.title}</h1></span>
-				<img className="header right" src={this.props.headerImageRight}/>
-				<div className="clear"/>				
+				<div className="left">
+					<img src={this.props.headerImageLeft}/>
+				</div>
+				<div className="center">
+					<span><h1>{this.props.title}</h1></span>
+				</div>
+				<div className="right">
+					<img src={this.props.headerImageRight}/>
+				</div>
+				<div className="clear"></div>
 			</div>
 		);
 	}

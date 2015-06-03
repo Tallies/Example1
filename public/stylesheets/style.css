@@ -1,67 +1,54 @@
 body {
-	margin:50px 0px; 
+	margin: 0px; 
 	padding:0px;
-	text-align:center;
-	font-family: Arial, Verdana, Time New Roman;
+	font-family: Arial, Verdana, "Times New Roman";
 	font-size: 12pt;
 	color: #3F4037;
 }
 
+.header, .mainContent, .content {
+	width: 100%;
+}
+
+.header {
+	margin-bottom: 20px;
+}
+
 .contentBody {
-	width:1024px;
-	margin:0px auto;
-	text-align:left;
-	padding:0px;
+	padding: 10px;
+	margin: 0px; 
 }
 
-.content{
-	position: relative;
-	margin-top: 40px;
+.header img{
+	width:100%;
+	margin-left:auto;
+	margin-right:auto;
 }
 
-.header > div {
-	position:relative;
+.header h1 { display: inline;}
+
+.header .center {
+	margin-left: auto;
+	margin-right: auto;
+	text-align : center;
 }
 
-img.header {
-	width:200px;
-	display: inline-block;
-	vertical-align: middle;	
+img {
+	width:auto; 
+	max-width: 100%;
 }
 
-.header img.left {
-	position: absolute;
-	left: -215px
-}
-
-.header img.right {
-	position: absolute;
-	left: 1024px;
-	height:100%
-	
-}
-
-span.header{	
-	display: inline-block;
-	vertical-align:middle;
-	/*text-shadow:3px 3px 10px #3F4037;*/
+.contentBody div{
+	box-sizing: border-box;
 }
 
 h2 {
-	/*text-shadow:3px 3px 7px #3F4037;*/
 	border-bottom:  1px solid #95C331;
 	padding-bottom: 15px;
 }
 
 a {
   color: #00B7FF;
-}
-
-div.menu{
-	width:119px;	
-	position: absolute;
-	left: -119px;
-	z-index:2; /*desperation because of my admittedly poor CSS knowledge*/
 }
 
 ol {
@@ -73,11 +60,14 @@ ul.menu {
 	list-style-position: outside;
 	display:table;
 	margin-top: 0px;
+	margin-left:auto;
+	margin-right:auto;
 	padding: 0px;
 }
 
-li.menuItem {
-	margin-bottom: 10px;
+ul.menu li.menuItem {
+	float:left;
+	margin: 5px;
 }
 
 a.menuItem {
@@ -126,7 +116,6 @@ a.menuItemActive:hover {
 
 div.contentPanel{
 	position: relative;
-	z-index:1; /*desperation because of my admittedly poor CSS knowledge*/
 }
 
 div.contentPanel h2 {
@@ -147,10 +136,6 @@ img.who {
 	height:100px;
 	width:100px;
 	vertical-align:middle;
-}
-
-.clear {
-	clear: both;
 }
 
 p.definition {
@@ -185,6 +170,15 @@ a.reference {
 	font-size:10pt;
 }
 
+content img {
+	width:auto;
+	height:auto;
+}
+
+img.block {
+	display:block;
+}
+
 /* Preloading */
 .contentImage{
 	background-image: url('../images/content_loading.png');
@@ -194,6 +188,42 @@ a.reference {
 
 .contentImageShow{
 	background-position: 0px 0px;
+}
+
+.clear {
+	clear : both;
+}
+
+@media (min-width: 1024px) {
+	.contentBody {
+		width: 1024px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	
+	.header .left, .header .center, .header .right {
+		vertical-align: middle;
+		display: inline-block;		
+		height:100%;
+	}
+	
+	.header .center {
+		width: 700px;
+	}
+	
+	.header img{
+		width:150px;		
+	}	
+	
+	.menu {
+		width:120px;
+		float:left;
+	}
+	
+	.content {
+		width:904px;
+		float:left;
+	}
 }
 
 

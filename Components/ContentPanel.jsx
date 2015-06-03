@@ -2,6 +2,7 @@
 
 var React = require("react");
 var _ = require("underscore");
+var $ = require("jquery");
 
 //SEE BELOW
 // var WhatContentPanel = require("./WhatContentPanel.jsx").WhatContentPanel;
@@ -25,13 +26,24 @@ var ContentPanel = React.createClass({
 		node.className += " contentImageShow";
 	},
 	
+	highlight: function() {
+		$('pre code').each(function(i, block) {
+			hljs.highlightBlock(block);
+		  });
+	},
+	
 	//React lifecycle methods
+	componentDidUpdate  : function() {
+		this.highlight()
+	},
+	componentDidMount : function() {
+		this.highlight();
+	},
 	getInitialState: function() {
 		return {content:this.props.content};
 	},
 	
 	render: function(){
-		
 		//DON'T DO IT THIS WAY!! USE THE Jade RENDERING ENGINE FOR CONTENT
 		//What happens when you wrap the content in jsx compenents is that all the content is 
 		//sent down to the client as the JSX components are browserfied into main.js. Also, it's not very
