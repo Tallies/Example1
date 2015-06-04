@@ -85,7 +85,7 @@ var ContentPanel = React.createClass({displayName: "ContentPanel",
 	setContent : function(content) {
 		this.setState({content : content});
 		var node = React.findDOMNode(this).parentNode;
-		node.firstChild.style.visibility = "initial";
+		node.firstChild.style.visibility = "visible";
 		node.className = node.className.substr(0, node.className.length - " contentImageShow".length);
 	},
 	
