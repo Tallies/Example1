@@ -16,7 +16,7 @@ p.definition
 p.definition
 	span.title NPM
 	span.description 
-		| Node Package Manager. An platform for including JavaScript packages 
+		| Node Package Manager. A platform for including JavaScript packages 
 		| in your projects.
 	a.reference(href="https://www.npmjs.com/") NPM home
 p.definition
@@ -31,7 +31,7 @@ p.definition
 	span.title Express
 	span.description
 		| An open source web application framework for Node.js. In other words, it
-		| provides the infrastrure for handling HTTP requests and responses.
+		| provides the infrastructure for handling HTTP requests and responses.
 	a.reference(href="http://expressjs.com/") Express.js home
 	a.reference(href="https://www.npmjs.com/package/express") Express.js NPM package
 p.definition
@@ -99,8 +99,8 @@ h3 Architecture
 p
 	| Architecturally, the site will be hosted in Node.js, running Express 
 	| with Jade as the templating engine. The header, menu and content pages 
-	| will be React.js components, as React.js gives us the ability do two 
-	| things that we need to meet both the non-functional requirements: 
+	| will be React.js components, as React.js gives us the ability to do two 
+	| things that we need to in order to meet both the non-functional requirements: 
 	ol
 		li It allows for executing the components on the server to create the HTML required for the section (header, menu or content) we're showing, and 
 		li It allows the the components to run on the client if JavaScript is available, and therefore enable a single page implementation.
@@ -140,7 +140,7 @@ p
 		| Let's quickly go over the folder structure and important files.
 		h5 /bin/www
 		|   It is the script file that Express uses to start the http server. If you're looking to configure ports 
-		| and such, that's were you need to go to do that. Previous versions of Express used a server.js, file in the application root. A lot of online examples still refer to "server.js", 
+		| and such, that's where you need to go to do that. Previous versions of Express used a server.js, file in the application root. A lot of online examples still refer to "server.js", 
 		| so don't get confused.
 		
 		h5 /node_modules
@@ -152,7 +152,7 @@ p
 		
 		h5 package.json
 		| The package.json file in the root of your application is a meta data file for describing the properties and dependencies of your application. It's very much like a .csproj, although it has a runtime purpose, and 
-		| is not just a descriptor file for an IDE. It's important to understand what is in the package.json file, and and excellent resource for that is  
+		| is not just a descriptor file for an IDE. It's important to understand what is in the package.json file, and an excellent resource for that is  
 		a(href="http://browsenpm.org/package.json" target="_blank") package.json - An interactive guide
 		| . There is also the 
 		a(href="https://docs.npmjs.com/files/package.json" target="_blank") official documentation
@@ -258,7 +258,7 @@ p
 	| convert it to the equivalent React API calls that is represented by the JSX. The third  task is adding a watch over main.js and the component script files, so that when any of them change, the "jshint" and "browserify" tasks are executed. The last 
 	| task is the default that will be called when executing Gulp. 
 	p
-	| You can now run you build process in a command prompt while developing. Execute: 
+	| You can now run your build process in a command prompt while developing. Execute: 
 	pre
 		code.dos gulp
 	| You should see output that looks as follows:
@@ -307,7 +307,7 @@ p
 		code.js
 			| var Header = React.createClass({});
 	
-	| In order to make our component available to the rest of our Node application, we need to ensure that it can be required from else where. To do that, you have to add you class to 
+	| In order to make our component available to the rest of our Node application, we need to ensure that it can be required from elsewhere. To do that, you have to add your class to 
 	| the module exports object at the bottom of your file:
 	pre
 		code.js
@@ -431,7 +431,7 @@ p
 	|  Pretty straight forward. I send in the "active" property to indicate which menu is currently the active menu. We'll later extend this to enable it to change dynamically on the client. 
 	| However, we're first building for  server only, "static" pages. That means that when the component renders, which is only once on the server, it only needs to know which menu item is active for that response.
 p
-	| On a personal note, the Menu component eloquently  captures what I love about React and the way to build components in it. It is all about composability and reuse. It's very powerful pattern.
+	| On a personal note, the Menu component eloquently  captures what I love about React and the way to build components in it. It is all about composability and reuse. It's a very powerful pattern.
 p
 	| That's the menu created. Quite simple!
 h5 The ContentPanel
@@ -470,17 +470,17 @@ pre
 			module.exports.ContentPanel = ContentPanel;
 h4 2. Static Jade views
 p 
-	| Now that our base components have been created, let's first create the Jade views for each for each to menu items. In the "views" folder, add  what.jade, why.jade, who.jade and how.jade. Add the appropriate Jade code in there for your content.
+	| Now that our base components have been created, let's first create the Jade views for each of the menu items. In the "views" folder, add  what.jade, why.jade, who.jade and how.jade. Add the appropriate Jade code in there for your content.
 	
 h4 3. Configure the routes
 p
-	| Open "/routes/index.js" in you editor. We first need install the JSX transpiler so that Node can seamlessly understand our React components. At the top of the file, insert the following line:
+	| Open "/routes/index.js" in your editor. We first need to install the JSX transpiler so that Node can seamlessly understand our React components. At the top of the file, insert the following line:
 	pre
 		code.js var jsx = require("node-jsx").install({extension: '.jsx', harmony: true});
 	| The default extension for the transpiler is ".js", so if you're using the ".jsx" extension like me, you need to tell the transpiler this using the "extension" property on the options 
 	| object. "harmony" just tells it that you also want to support ES6 syntax.
 p 
-	| To use the components, we have to require them, along with React and the Jade parser. Add the following requires in the appropriate place at the top of the index.js file.
+	| To use the components, we have to "require()" them, along with React and the Jade parser. Add the following "require" statments in the appropriate place at the top of the index.js file.
 	pre
 		code.js
 			:escape
@@ -492,7 +492,7 @@ p
 				var Menu = React.createFactory(require('../Components/Menu.jsx').Menu);
 				var ContentPanel = React.createFactory(require('../Components/ContentPanel.jsx').ContentPanel);
 	
-	| You will need an object to hold some configuration values, like the site title, the header images, etc. I created a json file called appconfig.json, and via the magic for "require()", I load it as JavaScript object. However, you could 
+	| You will need an object to hold some configuration values, like the site title, the header images, etc. I have a json file called "appconfig.json", and via the magic of "require()", load it as JavaScript object. However, you could 
 	| also just add it as a variable somewhere in index.js. Here is what the configuration looks like:	
 	pre
 		code.json
@@ -546,7 +546,7 @@ p
 					return str.indexOf(suffix, str.length - suffix.length) !== -1;
 				}
 				
-	| "initalData" is an object that will be used to tell the client side versions for React what the data was that was used to render the components on the server side. In the interest of not rehashing 
+	| "initalData" is an object that will be used to tell the client side versions of the React components what data was used to render the components on the server side. In the interest of not rehashing 
 	| code, I'm leaving it in these code snippets. For now you can ignore it, but note that whatever I pass to a React component, I add to this object too. The code to render the components are pretty straight forward. Note however 
 	| that the "renderToString()" function is used, as we want to pass it to the Jade view to use where appropriate.
 	pre
@@ -595,7 +595,7 @@ p
 					var content = Jade.renderFile(path, {compileDebug:true});	
 					return content;
 				}
-	p No particular magic here to note. In the "getParsedPage()",  we find the file base on convention (named the same as the menu item), and as Jade to render it for us.
+	p No particular magic here to note. In the "getParsedPage()",  we find the file base on convention (named the same as the menu item), and ask Jade to render it for us.
 	
 	h4 4. Using the rendered output
 	| React has rendered our components to strings, and now we must use those strings. In "/views/layout.jade", we use the header and menu HTML strings as follows:
@@ -626,12 +626,12 @@ p
 				block content
 					#react-content-panel-node.contentPanel.contentImage !{contentPanel}
 	
-	| Isn't Jade beautiful. I wish it was the standard for writing web pages, instead of clunky, overly verbose HTML.  Anyways... #{'"!{content}"'} contains the output of the ContentPanel component.
+	| Isn't Jade beautiful. I wish it was the standard for writing web pages, instead of clunky, overly verbose HTML.  Anyway... #{'"!{content}"'} contains the output of the ContentPanel component.
 
 					
 	h4 5. Test the server only version
 	p 
-		| That's it. You should be able to fire up Node, browse to your application. In the command prompt, in the root of your application, run:
+		| That's it. You should be able to fire up Node and browse to your application. In the command prompt, in the root of your application, run:
 		pre
 			code.dos npm start
 		
@@ -655,7 +655,7 @@ p
 	| But how does the component know when it can change the URL? In other words, how do we determine whether the component is client side and that JavaScript is enabled? 
 	
 	p
-	| Quite easily, it turns out. We'll simply rely on the one of the lifecycle functions available in React components, the "componentDidMount" function. It only executes when the component is mounted 
+	| Quite easily, it turns out. We'll simply rely on one of the lifecycle functions available in React components, the "componentDidMount" function. It only executes when the component is mounted 
 	| by the framework onto the HTML node. In "/Components/MenuItem.jsx", add the 'componentDidMount()' function below to the component.
 	pre
 		code.js
@@ -779,7 +779,7 @@ p
 	
 	| In "routes/index.js" we stringify the initialData object, and write it out to the response so it's available on the client, for main.js.
 	p
-	| Now to get the React components be loaded and used client side. In "/client_lib/main.js" we must reference React and our components (and JQuery, for later). Thanks to Browserify, we can do that by using Node.js style "require()" calls.
+	| Now to get the React components to be loaded and used client side. In "/client_lib/main.js" we must reference React and our components (and JQuery, for later). Thanks to Browserify, we can do that by using Node.js style "require()" calls.
 	pre
 		code.js
 			:escape
@@ -863,7 +863,8 @@ p
 				};
 
 	 
-	| In the menuClickHandler we tell the ContentPanel to show the loading image, before then initiating an AJAX call. When it gets the response back from the server it asks the PanelContent to update to the new content, and the Menu to switch to the show the menu item for the content as active. 
+	| In the menuClickHandler we tell the ContentPanel to show the loading image, before then initiating an AJAX call. When it gets the response back from the server it asks the PanelContent to update to the new content, and the Menu to switch to 
+	| show the menu item for the content as active. 
 
 	h4 Handling the AJAX requests for content
 	| The last thing to do to get it working is to add a route handler in "./routes/index.js" to handle /what/get, /who/get, /why/get and /how/get requests. For that, we add another routing entry.
